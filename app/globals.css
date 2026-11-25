@@ -1,0 +1,1032 @@
+@import "tailwindcss";
+
+:root {
+  /* Warm, muted romantic palette — deliberately desaturated, no default Tailwind rose. */
+  --color-ivory: #faf4ec;
+  --color-cream: #f4ead9;
+  --color-blush: #ecd3ce;
+  --color-blush-soft: #f4e2de;
+  --color-rose: #c48b8f;
+  --color-rose-deep: #ab6d73;
+  --color-wine: #6b2a3a;
+  --color-wine-soft: #8a4152;
+  --color-charcoal: #3a2e2c;
+  --color-charcoal-soft: #6b5a55;
+  --color-gold: #c6a15b;
+  --color-gold-soft: #e7d3a3;
+
+  --background: var(--color-ivory);
+  --foreground: var(--color-charcoal);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-ivory: var(--color-ivory);
+  --color-cream: var(--color-cream);
+  --color-blush: var(--color-blush);
+  --color-blush-soft: var(--color-blush-soft);
+  --color-rose: var(--color-rose);
+  --color-rose-deep: var(--color-rose-deep);
+  --color-wine: var(--color-wine);
+  --color-wine-soft: var(--color-wine-soft);
+  --color-charcoal: var(--color-charcoal);
+  --color-charcoal-soft: var(--color-charcoal-soft);
+  --color-gold: var(--color-gold);
+  --color-gold-soft: var(--color-gold-soft);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-playfair);
+  --font-script: var(--font-caveat);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #241c1a;
+    --foreground: #f1e6de;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/*
+ * Full-bleed experience — a native scrollbar cuts a grey gutter through the artwork,
+ * whether it belongs to the page or to an inner panel (the letter, the modal). Hidden
+ * everywhere, not disabled: wheel, touch and keyboard scrolling still work when content
+ * outgrows a short viewport.
+ */
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+*::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+/* Extremely subtle paper grain — inline SVG turbulence, no image asset required. */
+.paper-texture {
+  position: relative;
+}
+.paper-texture::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@keyframes envelope-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes shadow-breathe {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: translateX(-50%) scaleX(1);
+  }
+  50% {
+    opacity: 0.16;
+    transform: translateX(-50%) scaleX(0.85);
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modal-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes heart-float {
+  0% {
+    transform: translateY(0) scale(0.8);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-140px) scale(1.1);
+    opacity: 0;
+  }
+}
+
+@keyframes blob-drift-a {
+  0%,
+  100% {
+    transform: translate(-8%, -6%) scale(1);
+  }
+  50% {
+    transform: translate(6%, 4%) scale(1.08);
+  }
+}
+
+@keyframes blob-drift-b {
+  0%,
+  100% {
+    transform: translate(6%, 8%) scale(1);
+  }
+  50% {
+    transform: translate(-6%, -4%) scale(1.1);
+  }
+}
+
+@keyframes blob-drift-c {
+  0%,
+  100% {
+    transform: translate(0%, 0%) scale(1);
+  }
+  50% {
+    transform: translate(-5%, 6%) scale(0.95);
+  }
+}
+
+@keyframes sparkle-twinkle {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 0.65;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes seal-crack {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  35% {
+    transform: scale(1.25) rotate(-6deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.6) rotate(8deg);
+    opacity: 0;
+  }
+}
+
+@keyframes seal-shard {
+  0% {
+    transform: translate(-50%, -50%) translate(0, 0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) translate(var(--shard-x), var(--shard-y))
+      rotate(var(--shard-rot)) scale(0.4);
+    opacity: 0;
+  }
+}
+
+@keyframes heartbeat-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.035);
+  }
+}
+
+@keyframes heart-wiggle {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-12deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+}
+
+@keyframes polaroid-settle {
+  from {
+    opacity: 0;
+    transform: translateY(28px) rotate(-4deg) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+}
+
+@keyframes cursor-trail-fade {
+  from {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.4);
+  }
+}
+
+@keyframes burst-particle {
+  0% {
+    transform: translate(-50%, -50%) translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) translate(var(--burst-x), var(--burst-y))
+      scale(0.3);
+    opacity: 0;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Celebration — "For sure ❤️"
+   Phase 1 button reaction, Phase 2 magic wave, Phase 3 burst, Phase 4 typography,
+   Phase 5 heart shower, Phase 6 final reveal. Transform/opacity only.
+   --------------------------------------------------------------------------- */
+
+/* Phase 1 — the button compresses, then springs back. */
+@keyframes accept-press {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(0.93);
+  }
+  65% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Phase 1 — soft glow expanding out of the button. */
+@keyframes accept-glow {
+  0% {
+    opacity: 0.55;
+    transform: scale(0.6);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.6);
+  }
+}
+
+/*
+ * Phase 2 — warm dreamy wave rolling out from the pressed button. The element is laid
+ * out at 70vmax and scaled up to 3x rather than laid out at full size, so the browser
+ * rasterizes a far smaller layer for the same reach (it is a soft gradient, so there is
+ * no detail to lose).
+ */
+@keyframes magic-wave {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.12);
+  }
+  22% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(3);
+  }
+}
+
+/* Phase 3 — hearts, sparkles, petals and soft circles thrown from the origin. */
+@keyframes celebration-burst {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translate3d(0, 0, 0) rotate(0deg) scale(0.35);
+  }
+  14% {
+    opacity: var(--particle-opacity, 1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%)
+      translate3d(var(--particle-x, 0px), var(--particle-y, 0px), 0)
+      rotate(var(--particle-rotate, 0deg)) scale(var(--particle-scale, 0.6));
+  }
+}
+
+/* Phase 5 — gentle shower drifting down. */
+@keyframes celebration-drift {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  12% {
+    opacity: var(--particle-opacity, 0.85);
+  }
+  82% {
+    opacity: var(--particle-opacity, 0.85);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--particle-x, 3vw), 118vh, 0)
+      rotate(var(--particle-rotate, 40deg));
+  }
+}
+
+/* Phase 5 — a few that float upward instead. */
+@keyframes celebration-rise {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  16% {
+    opacity: var(--particle-opacity, 0.85);
+  }
+  78% {
+    opacity: var(--particle-opacity, 0.85);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--particle-x, -3vw), -112vh, 0)
+      rotate(var(--particle-rotate, -30deg));
+  }
+}
+
+/* Phase 4 — spring-ish entrance for the headline. */
+@keyframes title-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Phase 4 — a single soft gradient sweep through the letters. */
+@keyframes title-shimmer {
+  from {
+    background-position: -130% 0;
+  }
+  to {
+    background-position: 230% 0;
+  }
+}
+
+/* The question card gives way to the celebration instead of snapping out. */
+@keyframes scene-dissolve {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.965);
+  }
+}
+
+/* Persistent, slow halo for the celebrating/final screens. */
+@keyframes halo-breathe {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.06);
+  }
+}
+
+/* Phase 6 — a photograph being placed down in front of you. */
+@keyframes photo-reveal {
+  0% {
+    opacity: 0;
+    transform: translateY(34px) rotate(var(--photo-rotate-from, -3deg)) scale(0.92);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotate(var(--photo-rotate, 0deg)) scale(1);
+  }
+}
+
+/*
+ * The funny reactions get a quicker, bouncier entrance than the romantic reveal above:
+ * scales up fast, overshoots, dips, settles.
+ */
+@keyframes reaction-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) rotate(var(--photo-rotate-from, -5deg));
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.07) rotate(calc(var(--photo-rotate, -2deg) + 1.5deg));
+  }
+  76% {
+    transform: scale(0.97) rotate(var(--photo-rotate, -2deg));
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(var(--photo-rotate, -2deg));
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Motion art — one instrument at four scales.
+   A single travelling hairline of light traces the question card, becomes the
+   ribbon, writes YESSS, then draws the invitation border. Everything below is
+   either that line, or texture supporting it.
+   --------------------------------------------------------------------------- */
+
+/* Moment 1 — the point of light that appears under her fingertip. */
+@keyframes touch-spark {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.2);
+  }
+  25% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(2.4);
+  }
+}
+
+/* Moment 2 — heartbeat wave: thin luminous rings, staggered like a pulse. */
+@keyframes pulse-ring {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.08);
+  }
+  18% {
+    opacity: var(--ring-opacity, 0.75);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/*
+ * Moments 3, 4, 6 and 10 all use this: a stroke drawn on, then off. The dash length is
+ * set per element from its measured path length, so the line never looks stretched.
+ */
+@keyframes line-draw {
+  0% {
+    stroke-dashoffset: var(--path-length, 1000);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  70% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+
+/* Same draw, but it stays: used by the invitation card's border. */
+@keyframes line-draw-hold {
+  from {
+    stroke-dashoffset: var(--path-length, 1000);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* The bright tip that rides along the drawn line. */
+@keyframes line-tip {
+  0% {
+    opacity: 0;
+    offset-distance: 0%;
+  }
+  10% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    offset-distance: 100%;
+  }
+}
+
+/* Moment 3 — a particle lifting off the card's edge. */
+@keyframes edge-lift {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translate3d(0, 0, 0) scale(0.4);
+  }
+  20% {
+    opacity: var(--particle-opacity, 0.9);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%)
+      translate3d(var(--particle-x, 0px), var(--particle-y, -40px), 0) scale(1);
+  }
+}
+
+/* Moment 5 — constellation points arrive, hold, then disperse. */
+@keyframes constellation-point {
+  0% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  22% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.3) translateY(-14px);
+  }
+}
+
+/*
+ * Moment 6 — YESSS is written by light rather than bounced in: a wipe uncovers the
+ * letters left to right while they rise a few pixels into place.
+ */
+@keyframes light-write {
+  0% {
+    clip-path: inset(0 100% 0 0);
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    clip-path: inset(0 -6% 0 0);
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* The glare that travels across the letters as they are written. */
+@keyframes light-write-glare {
+  0% {
+    opacity: 0;
+    transform: translateX(-120%) skewX(-12deg);
+  }
+  30% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(320%) skewX(-12deg);
+  }
+}
+
+/* Moment 8 — love notes drifting through the far background. */
+@keyframes note-drift {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0) scale(0.96);
+  }
+  22% {
+    opacity: var(--note-opacity, 0.5);
+  }
+  72% {
+    opacity: var(--note-opacity, 0.5);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--note-x, 8px), -78px, 0) scale(1.02);
+  }
+}
+
+/* Moment 10 — the invitation's face arriving behind its drawn border. */
+@keyframes invitation-fill {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/*
+ * Moment 11 — a partial orbit around the invitation, then gone. The wrapper rotates and
+ * the child is pushed out along the radius, so one transform each.
+ */
+@keyframes orbit-sweep {
+  0% {
+    opacity: 0;
+    transform: rotate(var(--orbit-from, 0deg));
+  }
+  15% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--orbit-to, 220deg));
+  }
+}
+
+/* Moment 7 — slow bokeh depth behind everything, only once she has said yes. */
+@keyframes bokeh-drift {
+  0%,
+  100% {
+    opacity: var(--bokeh-opacity, 0.35);
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    opacity: calc(var(--bokeh-opacity, 0.35) * 1.6);
+    transform: translate3d(var(--bokeh-x, 10px), var(--bokeh-y, -18px), 0) scale(1.12);
+  }
+}
+
+/* Separate element from photo-reveal so the two transforms never fight. */
+@keyframes photo-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/*
+ * The letter's keepsake corner — pressed down onto the paper once the words have landed,
+ * overshooting slightly like a stamp being rocked onto an ink pad. Final opacity comes
+ * from --sticker-opacity rather than a class, so the animation cannot fight it.
+ */
+@keyframes sticker-press {
+  0% {
+    opacity: 0;
+    transform: rotate(var(--sticker-rotate, -8deg)) scale(1.6);
+  }
+  55% {
+    opacity: var(--sticker-opacity, 0.32);
+    transform: rotate(var(--sticker-rotate, -8deg)) scale(0.94);
+  }
+  100% {
+    opacity: var(--sticker-opacity, 0.32);
+    transform: rotate(var(--sticker-rotate, -8deg)) scale(1);
+  }
+}
+
+.animate-envelope-float {
+  animation: envelope-float 4s ease-in-out infinite;
+}
+
+.animate-shadow-breathe {
+  animation: shadow-breathe 4s ease-in-out infinite;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 500ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-fade-in {
+  animation: fade-in 200ms ease-out both;
+}
+
+.animate-modal-pop {
+  animation: modal-pop 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-heart-float {
+  animation: heart-float 3.2s ease-in infinite;
+}
+
+.animate-blob-a {
+  animation: blob-drift-a 22s ease-in-out infinite;
+}
+
+.animate-blob-b {
+  animation: blob-drift-b 26s ease-in-out infinite;
+}
+
+.animate-blob-c {
+  animation: blob-drift-c 30s ease-in-out infinite;
+}
+
+.animate-sparkle {
+  animation: sparkle-twinkle 3.6s ease-in-out infinite;
+}
+
+.animate-seal-crack {
+  animation: seal-crack 520ms cubic-bezier(0.34, 1.35, 0.64, 1) both;
+}
+
+.animate-seal-shard {
+  animation: seal-shard 560ms ease-out both;
+}
+
+.animate-heartbeat {
+  animation: heartbeat-pulse 2.8s ease-in-out infinite;
+}
+
+.animate-heart-wiggle {
+  animation: heart-wiggle 700ms ease-in-out;
+}
+
+.animate-polaroid-settle {
+  animation: polaroid-settle 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-cursor-trail-fade {
+  animation: cursor-trail-fade 650ms ease-out forwards;
+}
+
+.animate-burst-particle {
+  animation: burst-particle 620ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-fade-out {
+  animation: fade-out 240ms ease-out both;
+}
+
+.animate-accept-press {
+  animation: accept-press 320ms cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+
+.animate-accept-glow {
+  animation: accept-glow 620ms ease-out both;
+}
+
+.animate-magic-wave {
+  animation: magic-wave 1500ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Per-particle duration/delay come from inline custom properties. */
+.animate-celebration-burst {
+  animation: celebration-burst var(--particle-duration, 1100ms)
+    cubic-bezier(0.22, 1, 0.36, 1) var(--particle-delay, 0ms) both;
+}
+
+.animate-celebration-drift {
+  animation: celebration-drift var(--particle-duration, 4400ms) linear
+    var(--particle-delay, 0ms) both;
+}
+
+.animate-celebration-rise {
+  animation: celebration-rise var(--particle-duration, 4800ms) linear
+    var(--particle-delay, 0ms) both;
+}
+
+.animate-title-pop {
+  animation: title-pop 720ms cubic-bezier(0.22, 1.15, 0.36, 1) both;
+}
+
+/*
+ * Highlight sweep, not a reveal: the gradient repeats and both ends are wine, so the
+ * letters are always painted — only the gold band travels. (A no-repeat gradient here
+ * leaves the text transparent, i.e. invisible, once the sweep passes.)
+ */
+.animate-title-shimmer {
+  background-image: linear-gradient(
+    100deg,
+    var(--color-wine) 0%,
+    var(--color-wine) 36%,
+    var(--color-gold) 50%,
+    var(--color-wine) 64%,
+    var(--color-wine) 100%
+  );
+  background-size: 220% 100%;
+  background-repeat: repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: title-shimmer 2200ms ease-in-out 2 both;
+}
+
+.animate-scene-dissolve {
+  animation: scene-dissolve 620ms ease-in var(--dissolve-delay, 620ms) both;
+}
+
+.animate-halo-breathe {
+  animation: halo-breathe 6.5s ease-in-out infinite;
+}
+
+.animate-photo-reveal {
+  animation: photo-reveal 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-reaction-pop {
+  animation: reaction-pop 620ms cubic-bezier(0.34, 1.3, 0.64, 1) both;
+}
+
+/* --- motion art utilities --- */
+
+.animate-touch-spark {
+  animation: touch-spark 760ms ease-out both;
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring var(--ring-duration, 1400ms) cubic-bezier(0.16, 1, 0.3, 1)
+    var(--ring-delay, 0ms) both;
+}
+
+.animate-line-draw {
+  stroke-dasharray: var(--path-length, 1000);
+  animation: line-draw var(--draw-duration, 1600ms) cubic-bezier(0.4, 0, 0.3, 1)
+    var(--draw-delay, 0ms) both;
+}
+
+.animate-line-draw-hold {
+  stroke-dasharray: var(--path-length, 1000);
+  animation: line-draw-hold var(--draw-duration, 900ms) cubic-bezier(0.4, 0, 0.3, 1)
+    var(--draw-delay, 0ms) both;
+}
+
+.animate-line-tip {
+  offset-path: var(--tip-path);
+  offset-rotate: 0deg;
+  animation: line-tip var(--draw-duration, 1600ms) cubic-bezier(0.4, 0, 0.3, 1)
+    var(--draw-delay, 0ms) both;
+}
+
+.animate-edge-lift {
+  animation: edge-lift var(--particle-duration, 1500ms) cubic-bezier(0.22, 1, 0.36, 1)
+    var(--particle-delay, 0ms) both;
+}
+
+.animate-constellation-point {
+  animation: constellation-point var(--point-duration, 1800ms) ease-out
+    var(--point-delay, 0ms) both;
+}
+
+.animate-light-write {
+  animation: light-write 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-light-write-glare {
+  animation: light-write-glare 1100ms cubic-bezier(0.4, 0, 0.4, 1) both;
+}
+
+.animate-note-drift {
+  animation: note-drift var(--note-duration, 5200ms) linear var(--note-delay, 0ms) both;
+}
+
+.animate-invitation-fill {
+  animation: invitation-fill 620ms cubic-bezier(0.22, 1, 0.36, 1) var(--fill-delay, 0ms) both;
+}
+
+.animate-orbit-sweep {
+  animation: orbit-sweep var(--orbit-duration, 1600ms) cubic-bezier(0.4, 0, 0.4, 1)
+    var(--orbit-delay, 0ms) both;
+}
+
+.animate-bokeh-drift {
+  animation: bokeh-drift var(--bokeh-duration, 14s) ease-in-out infinite;
+}
+
+.animate-photo-float {
+  animation: photo-float 6s ease-in-out infinite;
+}
+
+.animate-sticker-press {
+  animation: sticker-press 620ms cubic-bezier(0.22, 1.2, 0.36, 1)
+    var(--sticker-delay, 0ms) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-envelope-float,
+  .animate-shadow-breathe,
+  .animate-heart-float,
+  .animate-blob-a,
+  .animate-blob-b,
+  .animate-blob-c,
+  .animate-sparkle,
+  .animate-heartbeat,
+  .animate-heart-wiggle,
+  .animate-cursor-trail-fade,
+  .animate-burst-particle,
+  .animate-seal-shard,
+  .animate-celebration-burst,
+  .animate-celebration-drift,
+  .animate-celebration-rise,
+  .animate-halo-breathe,
+  .animate-photo-float,
+  .animate-magic-wave,
+  .animate-accept-glow,
+  .animate-touch-spark,
+  .animate-pulse-ring,
+  .animate-line-draw,
+  .animate-line-tip,
+  .animate-edge-lift,
+  .animate-constellation-point,
+  .animate-light-write-glare,
+  .animate-note-drift,
+  .animate-orbit-sweep,
+  .animate-bokeh-drift {
+    animation: none;
+  }
+
+  /* The written reveals still happen, they just cross-fade instead of travelling. */
+  .animate-light-write,
+  .animate-invitation-fill {
+    animation: fade-in 300ms ease-out var(--fill-delay, 0ms) both;
+    clip-path: none;
+  }
+
+  .animate-line-draw-hold {
+    stroke-dasharray: none;
+    animation: fade-in 300ms ease-out var(--draw-delay, 0ms) both;
+  }
+
+  /* Keep the emotion, drop the movement: gentle cross-fades instead. */
+  .animate-title-pop,
+  .animate-photo-reveal,
+  .animate-reaction-pop {
+    animation: fade-in 260ms ease-out both;
+  }
+
+  .animate-scene-dissolve {
+    animation: fade-out 200ms ease-out var(--dissolve-delay, 0ms) both;
+  }
+
+  .animate-title-shimmer {
+    animation: none;
+    background-image: none;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    color: var(--color-wine);
+  }
+
+  .animate-accept-press {
+    animation: none;
+  }
+
+  /*
+   * No press. The animation has to go entirely rather than be swapped for fade-in,
+   * because fade-in ends at opacity 1 and its fill state would beat the rule below.
+   */
+  .animate-sticker-press {
+    animation: none;
+    opacity: var(--sticker-opacity, 0.32);
+    transform: rotate(var(--sticker-rotate, -8deg));
+  }
+}
