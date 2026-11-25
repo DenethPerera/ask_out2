@@ -1300,3 +1300,51 @@ body {
     animation: fade-in 180ms ease-out both;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   DateQuestion — tactile dodge puffs, milestone pill pop & playful bounce.
+   --------------------------------------------------------------------------- */
+
+@keyframes dodge-puff {
+  0% {
+    opacity: 0.75;
+    transform: translate(-50%, -50%) scale(0.35);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.9);
+  }
+}
+
+@keyframes milestone-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.88);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-1px) scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-dodge-puff {
+  animation: dodge-puff 520ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-milestone-pop {
+  animation: milestone-pop 340ms cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-dodge-puff {
+    animation: none;
+  }
+
+  .animate-milestone-pop {
+    animation: fade-in 200ms ease-out both;
+  }
+}
