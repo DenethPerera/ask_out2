@@ -1030,3 +1030,273 @@ body {
     transform: rotate(var(--sticker-rotate, -8deg));
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Landing — the envelope scene.
+   Entrance choreography, ambient hearts, light rays, orbiting sparkles, a living
+   wax seal and a glossy sheen. Transform/opacity only, except one tiny box-shadow.
+   --------------------------------------------------------------------------- */
+
+/* Hearts rising slowly through the far background, swaying as they go. */
+@keyframes ambient-heart-rise {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(var(--heart-scale, 1));
+  }
+  10% {
+    opacity: var(--heart-opacity, 0.35);
+  }
+  50% {
+    transform: translate3d(var(--heart-sway, 30px), -58vh, 0) rotate(var(--heart-rot, 18deg))
+      scale(var(--heart-scale, 1));
+  }
+  88% {
+    opacity: var(--heart-opacity, 0.35);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(0, -118vh, 0) rotate(0deg) scale(var(--heart-scale, 1));
+  }
+}
+
+/* Soft god-rays turning very slowly behind the envelope. */
+@keyframes rays-spin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+/* Headline letters rising out of a soft blur, one after another. */
+@keyframes char-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(0.55em) rotate(6deg);
+    filter: blur(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg);
+    filter: blur(0);
+  }
+}
+
+/* The envelope is dropped onto the table: falls, overshoots, settles. */
+@keyframes envelope-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(-70px) rotate(-7deg) scale(0.86);
+  }
+  58% {
+    opacity: 1;
+    transform: translateY(8px) rotate(1.5deg) scale(1.02);
+  }
+  80% {
+    transform: translateY(-3px) rotate(-0.6deg) scale(1);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+}
+
+/* Two axes a quarter-period apart = an elliptical orbit with one transform each. */
+@keyframes orbit-x {
+  from {
+    transform: translateX(calc(var(--orbit-rx, 160px) * -1));
+  }
+  to {
+    transform: translateX(var(--orbit-rx, 160px));
+  }
+}
+
+@keyframes orbit-y {
+  from {
+    transform: translateY(calc(var(--orbit-ry, 40px) * -1));
+  }
+  to {
+    transform: translateY(var(--orbit-ry, 40px));
+  }
+}
+
+/* "Touch me" rings radiating from the wax seal. */
+@keyframes seal-ping {
+  0% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.5);
+  }
+}
+
+/* A glossy highlight gliding across a surface, then resting off-stage. */
+@keyframes sheen-sweep {
+  0% {
+    transform: translateX(-160%) skewX(-18deg);
+  }
+  45%,
+  100% {
+    transform: translateX(420%) skewX(-18deg);
+  }
+}
+
+@keyframes glow-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 10px 24px -10px rgba(107, 42, 58, 0.6),
+      0 0 0 0 rgba(198, 161, 91, 0);
+  }
+  50% {
+    box-shadow:
+      0 12px 30px -8px rgba(107, 42, 58, 0.65),
+      0 0 30px 4px rgba(198, 161, 91, 0.45);
+  }
+}
+
+.animate-ambient-heart {
+  animation: ambient-heart-rise var(--heart-duration, 18s) ease-in-out var(--heart-delay, 0s)
+    infinite;
+}
+
+.animate-rays-spin {
+  animation: rays-spin 120s linear infinite;
+}
+
+.animate-char-rise {
+  display: inline-block;
+  animation: char-rise 760ms cubic-bezier(0.22, 1, 0.36, 1) var(--char-delay, 0ms) both;
+}
+
+.animate-envelope-enter {
+  animation: envelope-enter 1150ms cubic-bezier(0.22, 1, 0.36, 1) var(--enter-delay, 250ms) both;
+}
+
+.animate-rise-in {
+  animation: fade-in-up 800ms cubic-bezier(0.22, 1, 0.36, 1) var(--rise-delay, 0ms) both;
+}
+
+.animate-orbit-x {
+  animation: orbit-x var(--orbit-duration, 6s) ease-in-out var(--orbit-delay, 0s) infinite
+    alternate;
+}
+
+.animate-orbit-y {
+  animation: orbit-y var(--orbit-duration, 6s) ease-in-out
+    calc(var(--orbit-delay, 0s) - var(--orbit-duration, 6s) / 2) infinite alternate;
+}
+
+.animate-seal-ping {
+  animation: seal-ping 2.4s cubic-bezier(0, 0, 0.2, 1) var(--ping-delay, 0s) infinite;
+}
+
+.animate-sheen {
+  animation: sheen-sweep var(--sheen-duration, 5s) ease-in-out var(--sheen-delay, 1.6s) infinite;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 2.8s ease-in-out infinite;
+}
+
+/* A warm glow behind the headline letters, so they read as lit rather than printed. */
+.text-glow {
+  text-shadow:
+    0 0 18px rgba(198, 161, 91, 0.35),
+    0 1px 0 rgba(255, 252, 244, 0.6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-ambient-heart,
+  .animate-rays-spin,
+  .animate-orbit-x,
+  .animate-orbit-y,
+  .animate-seal-ping,
+  .animate-sheen,
+  .animate-glow-pulse {
+    animation: none;
+  }
+
+  .animate-char-rise,
+  .animate-envelope-enter,
+  .animate-rise-in {
+    animation: fade-in 300ms ease-out both;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Calendar Picker — soft romantic transitions & tactile micro-interactions.
+   --------------------------------------------------------------------------- */
+
+@keyframes calendar-slide-next {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes calendar-slide-prev {
+  from {
+    opacity: 0;
+    transform: translateX(-18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes day-select-pop {
+  0% {
+    transform: scale(0.78);
+  }
+  55% {
+    transform: scale(1.14);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes ticket-flip-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-calendar-next {
+  animation: calendar-slide-next 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-calendar-prev {
+  animation: calendar-slide-prev 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-day-pop {
+  animation: day-select-pop 340ms cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+
+.animate-ticket-in {
+  animation: ticket-flip-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-calendar-next,
+  .animate-calendar-prev,
+  .animate-day-pop,
+  .animate-ticket-in {
+    animation: fade-in 180ms ease-out both;
+  }
+}

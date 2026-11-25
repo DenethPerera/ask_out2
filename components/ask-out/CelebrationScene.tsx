@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import CardDissolve from "./CardDissolve";
 import CelebrationParticles from "./CelebrationParticles";
-import { CELEBRATION_COPY } from "./content";
+import { CELEBRATION_COPY, type DateDetails } from "./content";
 import DateCard from "./DateCard";
 import HeartConstellation from "./HeartConstellation";
 import LoveNotes from "./LoveNotes";
@@ -75,10 +75,15 @@ function budgetFor(width: number) {
 
 interface CelebrationSceneProps {
   geometry: AcceptanceGeometry | null;
+  dateDetails?: DateDetails;
   onComplete: () => void;
 }
 
-export default function CelebrationScene({ geometry, onComplete }: CelebrationSceneProps) {
+export default function CelebrationScene({
+  geometry,
+  dateDetails,
+  onComplete,
+}: CelebrationSceneProps) {
   // Captured once so the timeline can't restart mid-celebration if the OS setting flips.
   const [reduced] = useState(() => prefersReducedMotion());
 
@@ -256,7 +261,7 @@ export default function CelebrationScene({ geometry, onComplete }: CelebrationSc
           {/* Moment 10 — the invitation is drawn, and Moment 11 orbits it. */}
           {showInvitation && (
             <div className="absolute flex items-center justify-center">
-              <DateCard draw />
+              <DateCard draw details={dateDetails} />
 
               {!reduced &&
                 reached.has("orbit") &&

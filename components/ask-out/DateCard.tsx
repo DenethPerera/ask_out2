@@ -1,4 +1,4 @@
-import { CELEBRATION_COPY, DATE_DETAILS } from "./content";
+import { CELEBRATION_COPY, DATE_DETAILS, type DateDetails } from "./content";
 
 /** Perimeter of the border path below, for the draw-on animation. */
 const CARD_W = 260;
@@ -15,6 +15,7 @@ interface DateCardProps {
    * reduced-motion path).
    */
   draw?: boolean;
+  details?: DateDetails;
   className?: string;
 }
 
@@ -22,13 +23,14 @@ interface DateCardProps {
  * The invitation. A calendar plate rather than a form field: month tracked out in small
  * caps over a hairline rule, the day set large in the display face, weekday beneath it,
  * year as a quiet footnote, and a heart to close.
- *
- * Every value comes from DATE_DETAILS — the date is fixed in one place and never
- * derived from the current month.
  */
-export default function DateCard({ draw = false, className = "" }: DateCardProps) {
-  const hasTime = DATE_DETAILS.time.trim().length > 0;
-  const hasLocation = DATE_DETAILS.location.trim().length > 0;
+export default function DateCard({
+  draw = false,
+  details = DATE_DETAILS,
+  className = "",
+}: DateCardProps) {
+  const hasTime = details.time.trim().length > 0;
+  const hasLocation = details.location.trim().length > 0;
 
   return (
     <div className={`relative w-[min(78vw,16.25rem)] ${className}`}>
@@ -89,7 +91,7 @@ export default function DateCard({ draw = false, className = "" }: DateCardProps
           }`}
           style={draw ? { animationDelay: "700ms" } : undefined}
         >
-          {DATE_DETAILS.month}
+          {details.month}
         </p>
 
         <p
@@ -98,7 +100,7 @@ export default function DateCard({ draw = false, className = "" }: DateCardProps
           }`}
           style={draw ? { animationDelay: "760ms" } : undefined}
         >
-          {DATE_DETAILS.day}
+          {details.day}
         </p>
 
         <p
@@ -107,7 +109,7 @@ export default function DateCard({ draw = false, className = "" }: DateCardProps
           }`}
           style={draw ? { animationDelay: "980ms" } : undefined}
         >
-          {DATE_DETAILS.weekday}
+          {details.weekday}
         </p>
 
         <p
@@ -116,24 +118,24 @@ export default function DateCard({ draw = false, className = "" }: DateCardProps
           }`}
           style={draw ? { animationDelay: "1120ms" } : undefined}
         >
-          {DATE_DETAILS.year}
+          {details.year}
         </p>
 
         {(hasTime || hasLocation) && (
           <dl
-            className={`mt-4 space-y-1 text-xs text-charcoal-soft ${draw ? "animate-fade-in" : ""}`}
+            className={`mt-3 space-y-1 text-xs font-medium text-wine-soft ${draw ? "animate-fade-in" : ""}`}
             style={draw ? { animationDelay: "1200ms" } : undefined}
           >
             {hasTime && (
               <div>
                 <dt className="sr-only">Time</dt>
-                <dd>{DATE_DETAILS.time}</dd>
+                <dd>{details.time}</dd>
               </div>
             )}
             {hasLocation && (
               <div>
                 <dt className="sr-only">Where</dt>
-                <dd>{DATE_DETAILS.location}</dd>
+                <dd>{details.location}</dd>
               </div>
             )}
           </dl>

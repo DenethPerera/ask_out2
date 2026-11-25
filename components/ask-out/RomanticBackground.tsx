@@ -31,6 +31,20 @@ const STARS = [
   { top: "86%", left: "12%", delay: "2.1s" },
 ];
 
+/** Hearts rising slowly through the far background. Negative delays = already mid-flight. */
+const AMBIENT_HEARTS = [
+  { left: "5%", size: "1.1rem", duration: "19s", delay: "-2s", sway: "40px", rot: "22deg", opacity: 0.32, color: "text-rose" },
+  { left: "14%", size: "0.7rem", duration: "23s", delay: "-11s", sway: "-30px", rot: "-16deg", opacity: 0.28, color: "text-rose-deep" },
+  { left: "24%", size: "1.4rem", duration: "27s", delay: "-6s", sway: "26px", rot: "14deg", opacity: 0.2, color: "text-wine-soft" },
+  { left: "36%", size: "0.6rem", duration: "17s", delay: "-14s", sway: "-22px", rot: "-24deg", opacity: 0.3, color: "text-gold" },
+  { left: "48%", size: "0.9rem", duration: "25s", delay: "-19s", sway: "34px", rot: "18deg", opacity: 0.22, color: "text-rose" },
+  { left: "60%", size: "1.2rem", duration: "21s", delay: "-4s", sway: "-38px", rot: "-20deg", opacity: 0.26, color: "text-rose-deep" },
+  { left: "70%", size: "0.65rem", duration: "18s", delay: "-9s", sway: "24px", rot: "26deg", opacity: 0.3, color: "text-gold" },
+  { left: "80%", size: "1.5rem", duration: "29s", delay: "-16s", sway: "-28px", rot: "-12deg", opacity: 0.18, color: "text-wine-soft" },
+  { left: "89%", size: "0.85rem", duration: "20s", delay: "-1s", sway: "30px", rot: "20deg", opacity: 0.3, color: "text-rose" },
+  { left: "95%", size: "0.6rem", duration: "24s", delay: "-13s", sway: "-20px", rot: "-18deg", opacity: 0.26, color: "text-rose-deep" },
+];
+
 interface RomanticBackgroundProps {
   /**
    * Warms and brightens the whole backdrop for the celebration, and keeps it that way
@@ -63,6 +77,42 @@ export default function RomanticBackground({ magical = false }: RomanticBackgrou
       />
 
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_15%,rgba(107,42,58,0.06),transparent_60%)]" />
+
+      {/* Soft light rays turning slowly behind the content. */}
+      <div
+        className="absolute left-1/2 top-[46%] h-[170vmax] w-[170vmax] animate-rays-spin opacity-70"
+        style={{
+          transform: "translate(-50%, -50%)",
+          background:
+            "repeating-conic-gradient(from 0deg, transparent 0deg, rgba(231,211,163,0.22) 5deg, transparent 10deg, transparent 22deg)",
+          WebkitMaskImage: "radial-gradient(circle, black 0%, rgba(0,0,0,0.5) 18%, transparent 42%)",
+          maskImage: "radial-gradient(circle, black 0%, rgba(0,0,0,0.5) 18%, transparent 42%)",
+        }}
+      />
+
+      {/* Hearts drifting upward through the far background. */}
+      {AMBIENT_HEARTS.map((heart, index) => (
+        <span
+          key={`heart-${index}`}
+          className={`absolute -bottom-[8%] leading-none animate-ambient-heart motion-reduce:hidden ${heart.color}`}
+          style={
+            {
+              left: heart.left,
+              fontSize: heart.size,
+              "--heart-duration": heart.duration,
+              "--heart-delay": heart.delay,
+              "--heart-sway": heart.sway,
+              "--heart-rot": heart.rot,
+              "--heart-opacity": heart.opacity,
+            } as React.CSSProperties
+          }
+        >
+          ❤
+        </span>
+      ))}
+
+      {/* Gentle vignette to pull the eye to the centre. */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_55%,rgba(107,42,58,0.12))]" />
 
       {/* Persistent warm veil + a slow breathing halo, only while the magic is live. */}
       <div

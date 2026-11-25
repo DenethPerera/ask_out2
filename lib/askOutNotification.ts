@@ -10,7 +10,74 @@
 
 import nodemailer from "nodemailer";
 
-import { DATE_DETAILS } from "@/components/ask-out/content";
+import { DATE_DETAILS, TIME_SLOTS } from "@/components/ask-out/content";
+
+export interface ChosenDateInput {
+  /** YYYY-MM-DD, validated strictly before formatting server-side. */
+  isoDate?: string;
+  /** One of the fixed TIME_SLOTS ids — never raw free text. */
+  timeSlot?: string;
+}
+
+const ISO_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
+const EMAIL_WEEKDAYS = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+const EMAIL_MONTHS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+/**
+ * Formats the chosen date strictly from a validated YYYY-MM-DD + known slot id, so
+ * arbitrary strings from the request body can never be injected into the email.
+ */
+function formatChosenSchedule(chosen?: ChosenDateInput): { date: string; time?: string } {
+  let formattedDate = DATE_DETAILS.displayDate;
+  if (chosen?.isoDate) {
+    const match = ISO_DATE_PATTERN.exec(chosen.isoDate.trim());
+    if (match) {
+      const year = Number(match[1]);
+      const month = Number(match[2]);
+      const day = Number(match[3]);
+      const parsed = new Date(Date.UTC(year, month - 1, day));
+      if (
+        year >= 2024 &&
+        year <= 2100 &&
+        parsed.getUTCFullYear() === year &&
+        parsed.getUTCMonth() === month - 1 &&
+        parsed.getUTCDate() === day
+      ) {
+        formattedDate = `${EMAIL_WEEKDAYS[parsed.getUTCDay()]}, ${EMAIL_MONTHS[month - 1]} ${day}, ${year}`;
+      }
+    }
+  }
+
+  const matchedSlot = chosen?.timeSlot
+    ? TIME_SLOTS.find((slot) => slot.id === chosen.timeSlot || slot.detail === chosen.timeSlot)
+    : undefined;
+
+  return {
+    date: formattedDate,
+    time: matchedSlot?.detail || (DATE_DETAILS.time.trim() || undefined),
+  };
+}
 
 /**
  * What she did. Three distinct answers, three distinct emails:
@@ -121,14 +188,18 @@ function plain(value: string) {
     .replace(/&amp;/g, "&");
 }
 
-function buildMessage(outcome: AskOutOutcome) {
+function buildMessage(outcome: AskOutOutcome, chosen?: ChosenDateInput) {
   const copy = COPY[outcome];
   const happenedAt = new Date().toISOString();
 
   const rows: [string, string][] = [["What she did", copy.action]];
   // The date is only worth printing when it is actually going to happen.
-  if (outcome === "accepted") rows.push(["Date", DATE_DETAILS.displayDate]);
-  rows.push(["Time", happenedAt]);
+  if (outcome === "accepted") {
+    const schedule = formatChosenSchedule(chosen);
+    rows.push(["Chosen Date", schedule.date]);
+    if (schedule.time) rows.push(["Preferred Time", schedule.time]);
+  }
+  rows.push(["Sent At", happenedAt]);
 
   const text = [
     copy.heading,
@@ -266,6 +337,7 @@ async function send(message: ReturnType<typeof buildMessage>): Promise<Notificat
 export async function notifyOutcome(
   outcome: AskOutOutcome,
   eventId: string,
+  chosen?: ChosenDateInput,
 ): Promise<NotificationResult> {
   const now = Date.now();
 
@@ -291,7 +363,7 @@ export async function notifyOutcome(
   state.lastSentAt.set(outcome, now);
   state.sendTimestamps.push(now);
 
-  const result = await send(buildMessage(outcome));
+  const result = await send(buildMessage(outcome, chosen));
 
   // A send that never happened shouldn't burn the window — let a genuine retry through.
   if (result === "not-configured" || result === "provider-error") {

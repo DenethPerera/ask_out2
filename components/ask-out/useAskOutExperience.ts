@@ -7,6 +7,7 @@ export type EnvelopeStage = "closed" | "opening" | "opened" | "closing";
 export type Stage =
   | EnvelopeStage
   | "dateQuestion"
+  | "pickingDate"
   | "celebrating"
   | "accepted"
   | "declining"
@@ -61,8 +62,18 @@ export function useAskOutExperience() {
     setStage((current) => (current === "opened" ? "closing" : current));
   }, []);
 
+  const chooseDate = useCallback(() => {
+    setStage((current) => (current === "dateQuestion" ? "pickingDate" : current));
+  }, []);
+
+  const backToQuestion = useCallback(() => {
+    setStage((current) => (current === "pickingDate" ? "dateQuestion" : current));
+  }, []);
+
   const celebrate = useCallback(() => {
-    setStage((current) => (current === "dateQuestion" ? "celebrating" : current));
+    setStage((current) =>
+      current === "dateQuestion" || current === "pickingDate" ? "celebrating" : current,
+    );
   }, []);
 
   const finishCelebration = useCallback(() => {
@@ -73,5 +84,14 @@ export function useAskOutExperience() {
     setStage((current) => (current === "dateQuestion" ? "declining" : current));
   }, []);
 
-  return { stage, open, close, celebrate, finishCelebration, decline };
+  return {
+    stage,
+    open,
+    close,
+    chooseDate,
+    backToQuestion,
+    celebrate,
+    finishCelebration,
+    decline,
+  };
 }

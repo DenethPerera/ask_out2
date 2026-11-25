@@ -44,10 +44,20 @@ export async function POST(request: Request) {
 
   let outcome: unknown;
   let eventId: unknown;
+  let isoDate: unknown;
+  let timeSlot: unknown;
   try {
     const body = await request.json();
-    outcome = (body as { outcome?: unknown })?.outcome;
-    eventId = (body as { eventId?: unknown })?.eventId;
+    const parsed = body as {
+      outcome?: unknown;
+      eventId?: unknown;
+      isoDate?: unknown;
+      timeSlot?: unknown;
+    };
+    outcome = parsed?.outcome;
+    eventId = parsed?.eventId;
+    isoDate = parsed?.isoDate;
+    timeSlot = parsed?.timeSlot;
   } catch {
     return Response.json({ ok: false, status: "invalid" }, { status: 400 });
   }
@@ -64,9 +74,17 @@ export async function POST(request: Request) {
     return Response.json({ ok: false, status: "invalid" }, { status: 400 });
   }
 
+  const chosen =
+    outcome === "accepted"
+      ? {
+          isoDate: typeof isoDate === "string" ? isoDate.slice(0, 16) : undefined,
+          timeSlot: typeof timeSlot === "string" ? timeSlot.slice(0, 40) : undefined,
+        }
+      : undefined;
+
   // Awaited so the platform doesn't tear the function down mid-send, but the client never
   // waits on the result: it fires this request without reading the response.
-  const result = await notifyOutcome(outcome, eventId);
+  const result = await notifyOutcome(outcome, eventId, chosen);
 
   // Result is logged, not returned in detail — the page has no business knowing.
   return Response.json({ ok: true, status: result === "sent" ? "recorded" : "acknowledged" });

@@ -3,7 +3,12 @@
 import { useCallback, useState } from "react";
 import AcceptanceScreen from "@/components/ask-out/AcceptanceScreen";
 import CelebrationScene from "@/components/ask-out/CelebrationScene";
-import { DECLINE_COPY } from "@/components/ask-out/content";
+import {
+  DATE_DETAILS,
+  DECLINE_COPY,
+  type DateDetails,
+} from "@/components/ask-out/content";
+import DateCalendarPicker from "@/components/ask-out/DateCalendarPicker";
 import DateQuestion from "@/components/ask-out/DateQuestion";
 import EnvelopeCard from "@/components/ask-out/EnvelopeCard";
 import type { AcceptanceGeometry } from "@/components/ask-out/geometry";
@@ -16,9 +21,19 @@ import { useAskOutExperience } from "@/components/ask-out/useAskOutExperience";
 import { useReducedMotion } from "@/components/ask-out/useReducedMotion";
 
 export default function Home() {
-  const { stage, open, close, celebrate, finishCelebration, decline } = useAskOutExperience();
+  const {
+    stage,
+    open,
+    close,
+    chooseDate,
+    backToQuestion,
+    celebrate,
+    finishCelebration,
+    decline,
+  } = useAskOutExperience();
   const [showIgnoreImage, setShowIgnoreImage] = useState(false);
   const [geometry, setGeometry] = useState<AcceptanceGeometry | null>(null);
+  const [chosenDate, setChosenDate] = useState<DateDetails>(DATE_DETAILS);
   const reducedMotion = useReducedMotion();
   const notify = useOutcomeNotification();
 
@@ -28,21 +43,31 @@ export default function Home() {
     stage === "opened" ||
     stage === "closing";
 
+  const isPickingDate = stage === "pickingDate";
   const isCelebrating = stage === "celebrating";
   const isDeclining = stage === "declining";
-  // Both transitions dissolve the question card rather than snapping it away.
-  const isLeavingQuestion = isCelebrating || isDeclining;
 
   /**
-   * The three answer paths. Each fires its notification the moment the answer is
-   * registered — not when the animation finishes — and never awaits it. Nothing about the
-   * email can delay, block, or alter what she sees, whichever way she answers.
+   * Pressing "For sure ❤️" opens the calendar so she can choose the day & time that
+   * works best for her before the celebration locks in the invitation.
    */
-  const handleAccept = useCallback(
-    (accepted: AcceptanceGeometry) => {
+  const handleYesStep = useCallback(() => {
+    chooseDate();
+  }, [chooseDate]);
+
+  /**
+   * Once she locks in her chosen date & time on the calendar, the full celebration
+   * unfolds from her fingertip and the acceptance email is dispatched with her date.
+   */
+  const handleConfirmDate = useCallback(
+    (details: DateDetails, accepted: AcceptanceGeometry) => {
+      setChosenDate(details);
       setGeometry(accepted);
       celebrate();
-      notify("accepted");
+      notify("accepted", {
+        isoDate: details.isoDate,
+        timeSlot: details.time,
+      });
     },
     [celebrate, notify],
   );
@@ -71,7 +96,7 @@ export default function Home() {
         paddingRight: "max(1rem, env(safe-area-inset-right))",
       }}
     >
-      <RomanticBackground magical={isCelebrating || stage === "accepted"} />
+      <RomanticBackground magical={isPickingDate || isCelebrating || stage === "accepted"} />
 
       <InteractiveCursor
         className={`w-full ${stage === "accepted" ? "max-w-2xl" : "max-w-xl"}`}
@@ -85,32 +110,54 @@ export default function Home() {
           />
         )}
 
-        {(stage === "dateQuestion" || isLeavingQuestion) && (
+        {(stage === "dateQuestion" || isDeclining) && (
           <div
             key="dateQuestion"
-            aria-hidden={isLeavingQuestion}
+            aria-hidden={isDeclining}
             className={
-              isLeavingQuestion
+              isDeclining
                 ? "animate-scene-dissolve pointer-events-none"
                 : "animate-fade-in-up"
             }
             style={
-              isLeavingQuestion
+              isDeclining
                 ? ({
-                    // The celebration grows out of the card, so it lingers; the decline
-                    // clears out fast to make room for the "Wait…" beat.
-                    "--dissolve-delay": reducedMotion ? "40ms" : isCelebrating ? "560ms" : "0ms",
+                    "--dissolve-delay": reducedMotion ? "40ms" : "0ms",
                   } as React.CSSProperties)
                 : undefined
             }
           >
-            <DateQuestion onAccept={handleAccept} onDecline={handleDecline} />
+            <DateQuestion onAccept={handleYesStep} onDecline={handleDecline} />
+          </div>
+        )}
+
+        {(isPickingDate || isCelebrating) && (
+          <div
+            key="pickingDate"
+            aria-hidden={isCelebrating}
+            className={
+              isCelebrating
+                ? "animate-scene-dissolve pointer-events-none"
+                : "animate-fade-in-up"
+            }
+            style={
+              isCelebrating
+                ? ({
+                    "--dissolve-delay": reducedMotion ? "40ms" : "560ms",
+                  } as React.CSSProperties)
+                : undefined
+            }
+          >
+            <DateCalendarPicker
+              onConfirm={handleConfirmDate}
+              onBack={backToQuestion}
+            />
           </div>
         )}
 
         {stage === "accepted" && (
           <div key="accepted" className="animate-fade-in-up">
-            <AcceptanceScreen />
+            <AcceptanceScreen dateDetails={chosenDate} />
           </div>
         )}
 
@@ -131,7 +178,11 @@ export default function Home() {
       </InteractiveCursor>
 
       {isCelebrating && (
-        <CelebrationScene geometry={geometry} onComplete={finishCelebration} />
+        <CelebrationScene
+          geometry={geometry}
+          dateDetails={chosenDate}
+          onComplete={finishCelebration}
+        />
       )}
 
       {/* The dramatic beat between "Maybe another time" and the punchline. */}

@@ -1,5 +1,5 @@
 import DateCard from "./DateCard";
-import { FINAL_COPY, REACTION_PHOTO } from "./content";
+import { FINAL_COPY, REACTION_PHOTO, type DateDetails } from "./content";
 import PhotoCard from "./PhotoCard";
 
 /**
@@ -19,7 +19,11 @@ const HEARTS = [
   { left: "91%", delay: "0.5s", size: "0.85rem" },
 ];
 
-export default function AcceptanceScreen() {
+interface AcceptanceScreenProps {
+  dateDetails?: DateDetails;
+}
+
+export default function AcceptanceScreen({ dateDetails }: AcceptanceScreenProps) {
   return (
     <div className="relative mx-auto max-w-md sm:max-w-2xl">
       <div className="pointer-events-none absolute -inset-10 animate-fade-in rounded-[3rem] bg-[radial-gradient(circle,rgba(198,161,91,0.25),rgba(107,42,58,0.08)_55%,transparent_75%)] blur-2xl" />
@@ -69,7 +73,7 @@ export default function AcceptanceScreen() {
             className="animate-fade-in-up sm:col-start-2 sm:row-start-3"
             style={{ animationDelay: "700ms" }}
           >
-            <DateCard />
+            <DateCard details={dateDetails} />
           </div>
 
           <p

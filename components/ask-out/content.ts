@@ -8,17 +8,47 @@
  * drift to September 20 or any other date later on. This is the only place the date
  * exists — every component reads these fields.
  */
-export const DATE_DETAILS = {
+export interface DateDetails {
+  isoDate: string;
+  displayDate: string;
+  /** Parts, for the invitation card's typography. */
+  weekday: string;
+  month: string;
+  day: string;
+  year: string;
+  /** Still to be confirmed — shown only when set to a non-empty string. */
+  time: string;
+  location: string;
+}
+
+export const DATE_DETAILS: DateDetails = {
   isoDate: "2026-08-20",
   displayDate: "Thursday, August 20, 2026",
-  /** Parts, for the invitation card's typography. */
   weekday: "Thursday",
   month: "August",
   day: "20",
   year: "2026",
-  /** Still to be confirmed — shown only when set to a non-empty string. */
   time: "",
   location: "",
+};
+
+export const TIME_SLOTS = [
+  { id: "lunch", label: "Lunch", icon: "☀️", detail: "Lunch Date ☀️" },
+  { id: "afternoon", label: "Afternoon", icon: "☕", detail: "Afternoon Coffee ☕" },
+  { id: "evening", label: "Evening", icon: "🌅", detail: "Golden Hour 🌅" },
+  { id: "dinner", label: "Dinner", icon: "🕯️", detail: "Candlelight Dinner 🕯️" },
+] as const;
+
+export type TimeSlotId = (typeof TIME_SLOTS)[number]["id"];
+
+export const CALENDAR_COPY = {
+  eyebrow: "✦ save our date ✦",
+  heading: "When are you free? ❤️",
+  subtitle: "Pick the day & vibe that works best for you",
+  timeLabel: "Preferred time",
+  confirmIdle: "Pick a date first ✨",
+  confirmReady: "Lock in our date ❤️",
+  back: "← Back",
 };
 
 export interface PhotoAsset {

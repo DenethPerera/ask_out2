@@ -2,7 +2,7 @@
 
 import { useCallback, useRef } from "react";
 
-import type { AskOutOutcome } from "@/lib/askOutNotification";
+import type { AskOutOutcome, ChosenDateInput } from "@/lib/askOutNotification";
 
 const ENDPOINT = "/api/outcome";
 const STORAGE_PREFIX = "ask-out:event-id:";
@@ -69,7 +69,7 @@ function stableEventId(outcome: AskOutOutcome) {
 export function useOutcomeNotification() {
   const firedRef = useRef(new Set<AskOutOutcome>());
 
-  return useCallback((outcome: AskOutOutcome) => {
+  return useCallback((outcome: AskOutOutcome, chosen?: ChosenDateInput) => {
     if (firedRef.current.has(outcome) || requestsStarted.has(outcome)) return;
     firedRef.current.add(outcome);
     requestsStarted.add(outcome);
@@ -83,7 +83,12 @@ export function useOutcomeNotification() {
       void fetch(ENDPOINT, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ outcome, eventId: stableEventId(outcome) }),
+        body: JSON.stringify({
+          outcome,
+          eventId: stableEventId(outcome),
+          ...(chosen?.isoDate ? { isoDate: chosen.isoDate } : {}),
+          ...(chosen?.timeSlot ? { timeSlot: chosen.timeSlot } : {}),
+        }),
         // Survives the tab being closed or navigated straight after she answers.
         keepalive: true,
       }).catch(() => {
